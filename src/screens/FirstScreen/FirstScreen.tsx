@@ -9,7 +9,7 @@ import {
 
 export type Props = NavigationScreenProp<NavigationRoute<any>>;
 
-class HomeScreen extends Component {
+class FirstScreen extends Component {
   render() {
     return (
       <View>
@@ -35,4 +35,4 @@ class HomeScreen extends Component {
 //   },
 // });
 
-export default HomeScreen; // e.g. DetailScreen
+export default FirstScreen; // e.g. DetailScreen

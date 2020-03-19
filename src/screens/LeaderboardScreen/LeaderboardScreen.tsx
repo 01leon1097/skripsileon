@@ -1,6 +1,13 @@
-// import styles from './styles';
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, FlatList } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  ListRenderItemInfo,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import {
   NavigationScreenProp,
   NavigationEvents,
@@ -13,93 +20,172 @@ import {
   CardContent,
   CardAction,
 } from 'react-native-card-view';
+import firebase from 'firebase';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ImageButton } from '../../components';
 
-export type Props = NavigationScreenProp<NavigationRoute<any>>;
+type Datum = {
+  key: string;
+  name: string;
+  email: string;
+  score: number;
+  // description?: string;
+  avatar: string;
+};
+type LeaderboardData = Array<Datum>;
 
-class LeaderboardScreen extends Component {
+type Props = NavigationScreenProp<NavigationRoute<any>>;
+type State = {
+  leaderboardData: LeaderboardData;
+  isLoading: boolean;
+  league: 'Gold' | 'Silver' | 'Bronze';
+  // imageopacity: any;
+};
+
+class LeaderboardScreen extends Component<Props, State> {
+  state: State = {
+    leaderboardData: [],
+    isLoading: true,
+    league: 'Bronze',
+    // imageopacity: 0.2,
+  };
+
+  _leaderboardSubs = firebase.database().ref('users/');
+
+  componentDidMount() {
+    this._leaderboardSubs.on('value', (querySnapshot: any) => {
+      let dataTemp: Datum[] = [];
+      let data = querySnapshot.val();
+
+      let keys = Object.keys(data);
+
+      let unsortedData: Array<Datum> = keys.map((key) => data[key]);
+
+      let sortedData = unsortedData.sort((a, b) => b.score - a.score);
+
+      this.setState({
+        leaderboardData: sortedData,
+        isLoading: false,
+      });
+    });
+  }
+
   render() {
-    return (
-      // <View>
-      //   <Text>This is the Leaderboard!</Text>
-      // </View>
-      // <Card>
-      // <CardTitle>
-      //   <Text style={styles.title}>This is the Leaderboard!</Text>
-      // </CardTitle>
-      //   <CardContent>
-      //     <Text>This is Content!</Text>
-      //   </CardContent>
-      //   {/* <CardAction>
+    let { isLoading, leaderboardData, league } = this.state;
+    return !isLoading ? (
+      <View style={{ flex: 1 }}>
+        <View
+          style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}
+        >
+          <Text>sdfaffsfsfsafa</Text>
+          <View style={{ height: 120, marginTop: 20 }}>
+            {/* justifyContent: 'center' */}
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              <ImageButton
+                style={{ height: 120, width: 120 }}
+                source={{
+                  uri:
+                    'https://gamepedia.cursecdn.com/forwhomthealchemistexists_gamepedia_en/f/fe/Game%2CPortraitsM%2Czayi_dark.png?version=798ea38fb01d876b25beab9dadfaa289',
+                }}
+                onPress={() => {
+                  this.setState({ league: 'Bronze' });
+                }}
+              />
+              <ImageButton
+                style={{ height: 120, width: 120 }}
+                source={{
+                  uri:
+                    'https://gamepedia.cursecdn.com/forwhomthealchemistexists_gamepedia_en/1/11/Game%2CPortraitsM%2Cpok_b_masa.png?version=31d50fc7f5ff617a066690688f48ad7a',
+                }}
+                onPress={() => {
+                  this.setState({ league: 'Silver' });
+                }}
+              />
+              <ImageButton
+                style={{ height: 120, width: 120 }}
+                source={{
+                  uri:
+                    'https://gamepedia.cursecdn.com/forwhomthealchemistexists_gamepedia_en/0/08/Game%2CPortraitsM%2Ccloe_dark.png?version=fa386a66fcd8588514a4cd5cb7124361',
+                }}
+                onPress={() => {
+                  this.setState({ league: 'Gold' });
+                }}
+              />
+            </ScrollView>
+          </View>
+        </View>
 
-      //   </CardAction> */}
-      // </Card>
-      // <Card>
-      //   <CardTitle>
-      //     <Text style={styles.title}>This is the Leaderboard!</Text>
-      //   </CardTitle>
-      <View style={styles.container}>
-        <FlatList
-          data={[
-            { key: 'Devin', description: 'cool' },
-            { key: 'Dan', description: 'cool' },
-            { key: 'Dominic', description: 'cool' },
-            { key: 'Jackson', description: 'cool' },
-            { key: 'James', description: 'cool' },
-            { key: 'Joel', description: 'cool' },
-            { key: 'John', description: 'cool' },
-            { key: 'Jillian', description: 'hehe' },
-            { key: 'Jimmy', description: 'hehe' },
-            { key: 'Julie', description: 'hehe' },
-            { key: 'Devin', description: 'hehe' },
-            { key: 'Dan', description: 'hehe' },
-            { key: 'Dominic', description: 'hehe' },
-            { key: 'Jackson', description: 'hehe' },
-            { key: 'James', description: 'haha' },
-            { key: 'Joel', description: 'haha' },
-            { key: 'John', description: 'haha' },
-            { key: 'Jillian', description: 'haha' },
-            { key: 'Jimmy', description: 'haha' },
-            { key: 'Julie', description: 'haha' },
-            { key: 'Devin', description: 'haha' },
-            { key: 'Dan', description: 'lelele' },
-            { key: 'Dominic', description: 'lelele' },
-            { key: 'Jackson', description: 'lelele' },
-            { key: 'James', description: 'lelele' },
-            { key: 'Joel', description: 'lalalala' },
-            { key: 'John', description: 'lalalala' },
-            { key: 'Jillian', description: 'lalalala' },
-            { key: 'Jimmy', description: 'lalalala' },
-            { key: 'Julie', description: 'lalalala' },
-          ]}
-          renderItem={({ item }) => (
-            <Text style={styles.item}>
-              {item.key}
-              {'\n'}
-              {item.description}
-            </Text>
-          )}
-        />
+        <View>
+          <Text
+            style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              textAlign: 'center',
+            }}
+          >
+            {league} League
+          </Text>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '100',
+              textAlign: 'center',
+              color: 'gray',
+            }}
+          >
+            Top 3 get gems as reward
+          </Text>
+        </View>
+
+        <View style={styles.container}>
+          <FlatList data={leaderboardData} renderItem={this._renderItem} />
+        </View>
       </View>
-      // </Card>
+    ) : (
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+        <ActivityIndicator color="coral" />
+        <Text style={{ paddingVertical: 10 }}>Loading...</Text>
+      </View>
     );
   }
-}
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: BACKGROUND_COLOR,
-//   },
-//   contentContainer: {
-//     marginHorizontal: 14,
-//     marginVertical: 19,
-//   },
-//   headerText: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: FONT_COLOR,
-//   },
-// });
+  _renderItem = ({ item, index }: ListRenderItemInfo<Datum>) => {
+    return (
+      <View style={[styles.card, { height: 100 }]}>
+        <Image
+          style={[styles.imagecontainer, { width: 80, height: '100%' }]}
+          resizeMode="contain"
+          source={{ uri: item.avatar }}
+        />
+
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <Text
+            style={{
+              color: 'black',
+              fontSize: 20,
+              backgroundColor: 'blue',
+            }}
+          >
+            {item.name}
+          </Text>
+          {/* <View> */}
+          <Text>{item.email}</Text>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+          >
+            <Text>Score : {item.score}</Text>
+            <Text>#{index + 1}</Text>
+          </View>
+          {/* </View> */}
+          {/* <Text>Test</Text> */}
+        </View>
+      </View>
+    );
+  };
+}
 
 const styles = StyleSheet.create({
   title: {
@@ -110,10 +196,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   container: {
-    flex: 1,
+    flex: 3,
     padding: 10,
-    fontSize: 12,
-    backgroundColor: 'yellow',
+    backgroundColor: 'transparent',
   },
   item: {
     padding: 10,
@@ -123,6 +208,26 @@ const styles = StyleSheet.create({
   img: {
     width: 193,
     height: 110,
+  },
+  imagecontainer: {
+    margin: 5,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+  },
+  card: {
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    flexDirection: 'row',
+    shadowOpacity: 0.1,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    backgroundColor: 'white',
+    elevation: 10,
+    borderRadius: 10,
+    paddingHorizontal: 10,
   },
 });
 
